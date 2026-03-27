@@ -1,0 +1,22 @@
+{
+  "_about": "append-only project timeline. AI agents auto-extend this. do not reorder or delete entries.",
+  "milestones": [
+    {
+      "date": "2026-03-27",
+      "version": "v1.0",
+      "title": "initial ship",
+      "summary": "browserscript that captures claude.ai conversations + diagrams via React fiber read",
+      "decisions": [
+        "reads widget_code from __reactFiber -> memoizedProps -> updatedMessage.content to bypass iframe sandbox",
+        "injects DIAGRAM_CSS as <style> block inside SVG to resolve c-blue/c-teal/etc color classes",
+        "replaces stroke='context-stroke' with stroke='#6b7280' for standalone SVG rendering",
+        "resolves var(--t) by injecting svg { --t: #6b7280; } as first CSS rule",
+        "bookmarklet wraps script tag with jsdelivr CDN + cache-bust timestamp"
+      ],
+      "known_issues": [
+        "only captures diagrams present in React fiber - share pages with 'Connecting to visualize...' placeholder may miss some",
+        "fiber walk depth capped at 15- very deep component trees may miss widget data"
+      ]
+    }
+  ]
+}

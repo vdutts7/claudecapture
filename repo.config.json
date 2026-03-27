@@ -1,0 +1,12 @@
+{
+  "name": "claudecapture",
+  "description": "Capture Claude conversations + diagrams from any claude.ai page. Single browserscript.",
+  "author": "vdutts7",
+  "url": "https://github.com/vdutts7/claudecapture",
+  "site": "https://vd7.io/projects",
+  "topics": ["claude", "anthropic", "browser-script", "bookmarklet", "svg", "diagram", "web-crawling"],
+  "remote": {
+    "prefer": "ssh",
+    "origin_url": "git@github.com:vdutts7/claudecapture.git"
+  }
+}
