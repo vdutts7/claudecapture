@@ -38,8 +38,8 @@ ___
 **Solution**
 
 - **`claudecanonical.sh`**
-  - copies the canonical JSON URL for one conversation
-  - same payload shape the product uses: tools, thinking, ms timestamps, tree
+  - copies the canonical JSON URL for ONE chat
+  - same payload shape the product uses: tools, thinking blocks, ms timestamps, tree
 - **`claudeexportall.js`**
   - one DevTools paste, one JSON download
   - conversations, projects (instructions + docs links), memory, styles
@@ -59,17 +59,18 @@ ___
 ## Install
 
 ```bash
-cp .env.example .env          # add CLAUDE_ORG_UUID (needed only for claudecanonical.sh)
+cp ".env.example" ".env"
+# add CLAUDE_ORG_UUID (needed only for claudecanonical.sh)
 chmod +x claudecanonical.sh
 ```
 
-Organization UUID on **https://claude.ai** (DevTools console):
+Organization UUID on **https://claude.ai** (DevTools > Console):
 
 ```js
 fetch("/api/organizations").then(r=>r.json()).then(d=>console.log(d.filter(o=>JSON.stringify(o.capabilities).includes("chat"))[0].uuid))
 ```
 
-> or get it from UI: 
+> or get it from UI → https://claude.ai/settings/account
 
 ___
 
@@ -77,15 +78,14 @@ ___
 
 ### `claudecanonical.sh`
 
-**Signature:** `./claudecanonical.sh [<chat-id-or-url>]`
+**Signature:** `./claudecanonical.sh [<chat-id_or_chat-url>]`
 
 | Argument | Role |
 | --- | --- |
 | `<chat-id-or-url>` | UUID or full `https://claude.ai/chat/…` URL |
 | *(omit)* | Reads **`pbpaste`** and pulls the first UUID it finds |
 
-**Examples**
-
+Ex:
 ```bash
 ./claudecanonical.sh xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ./claudecanonical.sh https://claude.ai/chat/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -93,30 +93,28 @@ ___
 ./claudecanonical.sh
 ```
 
-- paste copied URL in the address bar, select all, save
-- same JSON the product uses to render the thread
+- paste copied URL in address bar → full JSON
+- same JSON Claude.ai uses to render the thread
 
-<img src="https://res.cloudinary.com/ddyc1es5v/image/upload/f_auto,q_auto/v1778020201/gh-repos/claudecapture/readme-claudecanonical-1.png" alt="claudecanonical demo 1" width="100%" />
-
-<img src="https://res.cloudinary.com/ddyc1es5v/image/upload/f_auto,q_auto/v1778020202/gh-repos/claudecapture/readme-claudecanonical-2.jpg" alt="claudecanonical demo 2" width="100%" />
+<table>
+<tr>
+<td width="50%" valign="top"><img src="https://res.cloudinary.com/ddyc1es5v/image/upload/v1778020201/gh-repos/claudecapture/readme-claudecanonical-1.png" alt="claudecanonical demo 1" width="100%" /></td>
+<td width="50%" valign="top"><img src="https://res.cloudinary.com/ddyc1es5v/image/upload/v1778020202/gh-repos/claudecapture/readme-claudecanonical-2.jpg" alt="claudecanonical demo 2" width="100%" /></td>
+</tr>
+</table>
 
 ### `claudeexportall.js`
 
-**Signature:** *(browser console on **claude.ai**)* paste full file, Enter
-
 | Step | Action |
 | --- | --- |
-| Open | **https://claude.ai** logged in |
-| Run | DevTools console → paste **`claudeexportall.js`** → Enter |
+| Open | **https://claude.ai** (logged in) |
+| Run | DevTools > Console → paste **`claudeexportall.js`** → Enter |
 
-**Examples**
 
-```
-DevTools (Cmd+Opt+J) → paste contents of claudeexportall.js → Enter
-```
+- downloads **`claude-full-export-YYYY-MM-DD.json`** 
+- large accounts (500+ chats) often need **5-10 minutes** (let it run, don't interrupt)
 
-- writes **`claude-full-export-YYYY-MM-DD.json`**
-- large accounts (500+ chats) often need **5-10 minutes**
+<img src="https://res.cloudinary.com/ddyc1es5v/image/upload/v1778023257/gh-repos/claudecapture/readme-claudeexportall.png" alt="claudeexportall console" width="100%" />
 
 ### `claudecapture.js`
 
@@ -124,18 +122,12 @@ DevTools (Cmd+Opt+J) → paste contents of claudeexportall.js → Enter
 
 | Step | Action |
 | --- | --- |
-| Open | **`https://claude.ai/chat/…`** |
-| Run | DevTools console → paste **`claudecapture.js`** → Enter |
-
-**Examples**
-
-```
-DevTools (Cmd+Opt+J) → paste contents of claudecapture.js → Enter
-```
+| Open | **`https://claude.ai/chat/xxxxxx`** |
+| Run | DevTools > Console → paste **`claudecapture.js`** → Enter |
 
 - downloads conversation JSON plus standalone diagram HTML from live DOM + fiber
 
-<img src="https://res.cloudinary.com/ddyc1es5v/image/upload/f_auto,q_auto/v1778020200/gh-repos/claudecapture/social-preview.png" alt="claudecapture" width="100%" />
+<img src="https://res.cloudinary.com/ddyc1es5v/image/upload/v1778020200/gh-repos/claudecapture/social-preview.png" alt="claudecapture" width="100%" />
 
 ### Comparison
 
@@ -149,9 +141,9 @@ DevTools (Cmd+Opt+J) → paste contents of claudecapture.js → Enter
 | diagrams as HTML | no | no | yes |
 | offline | no | no | yes after cached DOM |
 
-Canonical API shape (both URL builders use these query flags):
+Canonical API shape (both url builders use these query flags):
 
-```
+```text
 /api/organizations/{ORG_UUID}/chat_conversations/{CHAT_ID}?tree=True&rendering_mode=messages&render_all_tools=true&consistency=eventual
 ```
 
@@ -172,9 +164,9 @@ If Anthropic locks down the internal API, the tools degrade gracefully:
 | HAR capture | DevTools > Network > Save all as HAR | **none - browser feature** | **permanent** |
 | DOM scrape | `claudecapture` | Anthropic changes DOM structure | low-medium |
 
-Two routes are **unbreakable**:
+2 routes are **unbreakable**:
 - official export (legally required)
-- HAR capture (browser feature)
+- HAR capture (via DevTools > Network)
 
 > Everything else is best-effort against internal API changes
 
