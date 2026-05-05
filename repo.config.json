@@ -1,10 +1,10 @@
 {
   "name": "claudecapture",
-  "description": "Capture Claude conversations + diagrams from any claude.ai page. Single browserscript.",
+  "description": "Three tools to extract your data from claude.ai - canonical API, bulk export, DOM scrape.",
   "author": "vdutts7",
   "url": "https://github.com/vdutts7/claudecapture",
   "site": "https://vd7.io/projects",
-  "topics": ["claude", "anthropic", "browser-script", "bookmarklet", "svg", "diagram", "web-crawling"],
+  "topics": ["claude", "anthropic", "browserscript", "bookmarklet", "data-export", "api", "svg", "diagram"],
   "remote": {
     "prefer": "ssh",
     "origin_url": "git@github.com:vdutts7/claudecapture.git"

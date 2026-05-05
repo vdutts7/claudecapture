@@ -9,7 +9,6 @@ Thumbs.db
 
 # output / test artifacts
 *.zip
-*.json
 _archive/
 _artifacts/
 _plans/

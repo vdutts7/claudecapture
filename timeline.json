@@ -14,8 +14,29 @@
         "bookmarklet wraps script tag with jsdelivr CDN + cache-bust timestamp"
       ],
       "known_issues": [
-        "only captures diagrams present in React fiber - share pages with 'Connecting to visualize...' placeholder may miss some",
+        "only captures diagrams present in React fiber- share pages with 'Connecting to visualize...' placeholder may miss some",
         "fiber walk depth capped at 15- very deep component trees may miss widget data"
+      ]
+    },
+    {
+      "date": "2026-05-04",
+      "version": "v2.0",
+      "title": "canonical API + bulk export",
+      "summary": "added claudecanonical (single-chat canonical API extractor) and claudeexportall (bulk account export with full tool results)",
+      "decisions": [
+        "discovered canonical query params: ?tree=True&rendering_mode=messages&render_all_tools=true&consistency=eventual",
+        "render_all_tools=true returns full raw tool_result JSON- confirmed on places_search conversation",
+        "auto-detects chat-capable org (capabilities includes 'chat') vs API org",
+        "org ID stored in .env (gitignored), .env.example ships clean",
+        "claudecanonical.sh extracts UUID from URL or clipboard, copies canonical URL to clipboard",
+        "claudeexportall.js exports all conversations + projects (with prompt_template) + knowledge docs + memory + styles",
+        "copy() fallback if blob download blocked by popup blocker",
+        "three tools ranked by completeness: (1) claudecanonical, (2) claudeexportall, (3) claudecapture"
+      ],
+      "known_issues": [
+        "session cookies expire- refresh claude.ai if 401s",
+        "rate limiting possible on bulk export- script auto-waits 5s on 429",
+        "internal API endpoints can change without notice"
       ]
     }
   ]

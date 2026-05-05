@@ -1,66 +1,151 @@
+<div align="center">
+
 [![vd7](https://res.cloudinary.com/ddyc1es5v/image/upload/v1772395999/vd7-pfp-gradient.webp)](https://vd7.io)
 
 # claudecapture
 
-***Capture Claude conversations + diagrams from any claude.ai page. Single browserscript***
+***Three tools to pull your data out of claude.ai, ordered by how complete the export is***
 
-Paste into console → get a ZIP with conversation JSON/MD and standalone colored diagram HTML files. Reads widget source directly from the React fiber — bypasses the iframe sandbox that normally makes diagrams go black when saved.
+<img src="assets/badges/javascript.badge.svg" alt="vanilla JS" height="34">
+<img src="assets/badges/zsh.badge.svg" alt="zsh" height="34">
+<img src="assets/badges/anthropic.badge.svg" alt="claude.ai" height="34">
 
----
+</div>
+
+___
+
+## Contents
+
+- [About](#about)
+- [Install](#install)
+- [Usage](#usage)
+- [Requirements](#requirements)
+- [Contact](#contact)
+
+___
+
+## About
+
+**Problem**
+
+- **claude.ai** keeps rich chat data (tool payloads, thinking, precise timestamps) behind the normal UI and partial exports
+- you often need **one chat in full**, **the whole account**, or **rendered diagrams** as standalone files, not three different half-measures
+
+**Solution**
+
+- **`claudecanonical.sh`** copies the canonical JSON URL for a single conversation (same shape the app uses: tools, thinking, ms timestamps, tree)
+- **`claudeexportall.js`** pastes into DevTools once and downloads one JSON with conversations, projects (instructions + docs links), memory, and styles
+- **`claudecapture.js`** scrapes the rendered DOM and lifts diagram/widget source from React fiber into standalone HTML (SVG colors baked in, no iframe sandbox fight)
+
+**Summary**
+
+- rank tools by **scope** (one chat vs whole account) and **fidelity** (raw API vs rendered page)
+- **`claudecanonical`** and **`claudeexportall`** hit the internal API with **`render_all_tools=true`** so tool blocks are not stripped
+- **`claudecapture`** is for when you care about **what hit the screen** (especially diagrams), not raw API payloads
+
+___
 
 ## Install
 
-**Bookmarklet (easiest) —** drag this to your bookmarks bar:
-
+```bash
+cp .env.example .env          # add CLAUDE_ORG_UUID (needed only for claudecanonical.sh)
+chmod +x claudecanonical.sh
 ```
-javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/vdutts7/claudecapture@main/claudecapture.js';document.head.appendChild(s);})()
+
+Org UUID on **claude.ai** (DevTools console):
+
+```js
+fetch("/api/organizations").then(r=>r.json()).then(d=>console.log(d.filter(o=>JSON.stringify(o.capabilities).includes("chat"))[0].uuid))
 ```
 
-**Console —** open DevTools on any `claude.ai` page and paste `claudecapture.js` directly.
-
----
+___
 
 ## Usage
 
-```js
-// after loading the script:
-window.__claudeCapture()        // capture + download ZIP
+### `claudecanonical.sh`
+
+**Signature:** `./claudecanonical.sh [<chat-id-or-url>]`
+
+| Argument | Role |
+| --- | --- |
+| `<chat-id-or-url>` | UUID or full `https://claude.ai/chat/…` URL |
+| *(omit)* | Reads **`pbpaste`** and pulls the first UUID it finds |
+
+**Examples**
+
+```bash
+./claudecanonical.sh xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+./claudecanonical.sh https://claude.ai/chat/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+# copy a chat URL, then:
+./claudecanonical.sh
 ```
 
-That's it. Two files download automatically:
+Paste the copied URL in the address bar, select all, save. You get the same JSON the product uses to render the thread.
 
-- `title_timestamp.json` — full structured capture: messages, markdown, web search, tool steps, raw widget source
-- `diagram-title_timestamp.html` — standalone colored diagram, open in any browser
+### `claudeexportall.js`
 
----
+**Signature:** *(browser console on **claude.ai**)* paste full file, Enter
 
-## Why it works
+| Step | Action |
+| --- | --- |
+| Open | **claude.ai** logged in |
+| Run | DevTools console → paste **`claudeexportall.js`** → Enter |
 
-Claude diagrams render inside a sandboxed `a.claude.ai/isolated-segment` iframe. The SVG source is injected from the host's CSS — so saving the SVG gives you black boxes.
-
-This script reads the widget source directly from the React fiber (`__reactFiber` → `memoizedProps` → `updatedMessage.content`) before it ever hits the iframe, then applies two fixes to make it render standalone:
-
-1. Injects the color CSS as a `<style>` block inside the SVG
-2. Replaces `stroke="context-stroke"` (SVG paint server, iframe-only) with `stroke="#6b7280"`
-
----
-
-## Output
+**Examples**
 
 ```
-title_2026-03-27T17-44-06.json          full conversation + raw widget source
-diagram-name_2026-03-27T17-44-06.html  standalone diagram, colors baked in
+DevTools (Cmd+Opt+J) → paste contents of claudeexportall.js → Enter
 ```
 
----
+Writes **`claude-full-export-YYYY-MM-DD.json`**. Large accounts (500+ chats) often need **5-10 minutes**.
 
-## Stack
+### `claudecapture.js`
 
-![JavaScript](https://cdn.simpleicons.org/javascript/F7DF1E) vanilla JS - zero deps  
-![Claude](https://cdn.simpleicons.org/anthropic/000000) claude.ai React fiber  
-![SVG](https://cdn.simpleicons.org/svg/FFB13B) SVG + inline CSS injection  
+**Signature:** *(browser console on an open chat)* paste full file, Enter
 
----
+| Step | Action |
+| --- | --- |
+| Open | **`claude.ai/chat/…`** |
+| Run | DevTools console → paste **`claudecapture.js`** → Enter |
+
+**Examples**
+
+```
+DevTools (Cmd+Opt+J) → paste contents of claudecapture.js → Enter
+```
+
+Downloads conversation JSON plus standalone diagram HTML files built from the live DOM + fiber.
+
+### Comparison
+
+| | **claudecanonical** | **claudeexportall** | **claudecapture** |
+| --- | --- | --- | --- |
+| scope | one chat | whole account | one chat |
+| tool results | full raw JSON | full raw JSON | absent |
+| thinking blocks | full | full | absent |
+| timestamps | ms | ms | coarse |
+| projects / docs / memory | no | yes | no |
+| diagrams as HTML | no | no | yes |
+| offline | no | no | yes after cached DOM |
+
+Canonical API shape (both URL builders use these query flags):
+
+```
+/api/organizations/{ORG}/chat_conversations/{ID}?tree=True&rendering_mode=messages&render_all_tools=true&consistency=eventual
+```
+
+Without **`render_all_tools=true`** responses tend to be text-only. **`claudecapture`** reads the painted DOM instead (different tradeoffs, same product session).
+
+___
+
+## Requirements
+
+- **macOS** with **`pbcopy`** / **`pbpaste`** for **`claudecanonical.sh`** (clipboard URL parsing)
+- **`zsh`** for **`claudecanonical.sh`**
+- modern Chromium browser, logged into **claude.ai**, for **`claudeexportall.js`** and **`claudecapture.js`**
+- **`CLAUDE_ORG_UUID`** in **`.env`** when using **`claudecanonical.sh`**
+
+___
 
 ## Contact
 
