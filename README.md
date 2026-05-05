@@ -1,16 +1,18 @@
 <div align="center">
 
-[![vd7](https://res.cloudinary.com/ddyc1es5v/image/upload/v1772395999/vd7-pfp-gradient.webp)](https://vd7.io)
+<a href="https://vd7.io"><img src="https://res.cloudinary.com/ddyc1es5v/image/upload/w_160,h_160,c_fill/v1772395999/vd7-pfp-gradient.webp" alt="vd7" width="80" height="80" /></a>
 
-# claudecapture
+<h1>claudecapture</h1>
 
-***Three tools to pull your data out of claude.ai, ordered by how complete the export is***
+<p><i><b>Three tools to pull your data out of claude.ai, ordered by how complete the export is</b></i></p>
 
-<img src="assets/badges/javascript.badge.svg" alt="vanilla JS" height="34">
-<img src="assets/badges/zsh.badge.svg" alt="zsh" height="34">
-<img src="assets/badges/anthropic.badge.svg" alt="claude.ai" height="34">
+<img src="assets/badges/javascript.badge.svg" alt="vanilla JS" height="34" />
+<img src="assets/badges/zsh.badge.svg" alt="zsh" height="34" />
+<img src="assets/badges/anthropic.badge.svg" alt="claude.ai" height="34" />
 
 </div>
+
+<br/>
 
 ___
 
