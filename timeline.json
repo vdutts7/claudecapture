@@ -38,6 +38,24 @@
         "rate limiting possible on bulk export- script auto-waits 5s on 429",
         "internal API endpoints can change without notice"
       ]
+    },
+    {
+      "date": "2026-05-08",
+      "version": "v3.0",
+      "title": "diagrams.js + cleanup",
+      "summary": "added diagrams.js post-processor, removed bookmarklet.js, simplified README",
+      "decisions": [
+        "canonical JSON already contains widget_code in tool_use blocks - identical SVG to claudecapture DOM scrape",
+        "diagrams.js wraps canonical widget_code as standalone HTML with baked-in DIAGRAM_CSS + context-stroke fix",
+        "verified byte-identical output: diagrams.js from canonical == claudecapture.js from DOM",
+        "removed bookmarklet.js (CDN indirection, no unique value)",
+        "claudecapture.js kept as future content script for browser extension direction",
+        "README cut from 196 to ~70 lines - removed fallback matrix, verbose problem/solution framing"
+      ],
+      "known_issues": [
+        "sendPrompt() onclick handlers in SVG diagrams are dead in standalone HTML (both tools)",
+        "DIAGRAM_CSS is hardcoded - if claude.ai changes their widget color classes, needs manual update"
+      ]
     }
   ]
 }
